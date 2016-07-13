@@ -64,7 +64,8 @@ class CommentController implements \Anax\DI\IInjectionAware
      *
      * @return void.
      */
-    private function setIndexPageTitle($pageKey) {
+    private function setIndexPageTitle($pageKey)
+    {
         $titles = [
             'comments1' => "Anax-MVC kommentarsida 1",
             'comments2' => "Anax-MVC kommentarsida 2"
@@ -88,7 +89,8 @@ class CommentController implements \Anax\DI\IInjectionAware
      *
      * @return []   the array of form fields values.
      */
-    private function setFormValues($pageKey = null, $comment = null, $output = null, $id = null) {
+    private function setFormValues($pageKey = null, $comment = null, $output = null, $id = null)
+    {
         $formValues = [
             'mail'      => $comment['mail'],
             'web'       => $comment['web'],
@@ -135,7 +137,8 @@ class CommentController implements \Anax\DI\IInjectionAware
      *
      * @return [] the array with the values from the form fields.
      */
-    private function getCommentSessionValuesFromForm() {
+    private function getCommentSessionValuesFromForm()
+    {
         $comment = [
             'content'   => $this->request->getPost('content'),
             'name'      => $this->request->getPost('name'),

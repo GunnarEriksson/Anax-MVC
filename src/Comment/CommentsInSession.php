@@ -106,7 +106,8 @@ class CommentsInSession implements \Anax\DI\IInjectionAware
      *
      * @return boolean true if comment id exists in session, false otherwise.
      */
-    private function doesCommentIdExists($id, $comments) {
+    private function doesCommentIdExists($id, $comments)
+    {
         $isIdExisting = false;
 
         if (isset($id) && !empty($comments)) {
