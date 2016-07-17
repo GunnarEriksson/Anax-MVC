@@ -1,5 +1,6 @@
 <?php
 
+
 namespace Anax\Comment;
 
 /**
@@ -91,11 +92,16 @@ class CommentController implements \Anax\DI\IInjectionAware
      */
     private function setFormValues($pageKey = null, $comment = null, $output = null, $id = null)
     {
+        $mail = isset($comment['mail']) ? $comment['mail'] : null;
+        $web = isset($comment['web']) ? $comment['web'] : null;
+        $name = isset($comment['name']) ? $comment['name'] : null;
+        $content = isset($comment['content']) ? $comment['content'] : null;
+
         $formValues = [
-            'mail'      => $comment['mail'],
-            'web'       => $comment['web'],
-            'name'      => $comment['name'],
-            'content'   => $comment['content'],
+            'mail'      => $mail,
+            'web'       => $web,
+            'name'      => $name,
+            'content'   => $content,
             'output'    => $output,
             'id'        => $id,
             'pageKey'   => $pageKey
