@@ -31,7 +31,7 @@ class CommentController implements \Anax\DI\IInjectionAware
         $this->views->add('comment/comments', [
             'comments'  => $all,
             'pageKey'   => $key,
-        ]);
+        ], 'main-wide');
     }
 
     /**
@@ -50,9 +50,8 @@ class CommentController implements \Anax\DI\IInjectionAware
 
         $formValues = $this->setFormValues($pageKey);
 
-        $this->theme->addStylesheet('css/form.css');
         $this->setIndexPageTitle($pageKey);
-        $this->views->add('comment/form', $formValues);
+        $this->views->add('comment/form', $formValues, 'main-wide');
     }
 
     /**
@@ -75,7 +74,7 @@ class CommentController implements \Anax\DI\IInjectionAware
         $this->theme->setTitle($titles[$pageKey]);
         $this->views->add('comment/index', [
             'pageTitle' => $this->theme->getVariable("title")
-        ]);
+        ], 'main-wide');
     }
 
     /**
@@ -211,9 +210,8 @@ class CommentController implements \Anax\DI\IInjectionAware
 
         $formValues = $this->setFormValues($pageKey, $comment, $output, $id);
 
-        $this->theme->addStylesheet('css/form.css');
         $this->setIndexPageTitle($pageKey);
-        $this->views->add('comment/editForm', $formValues);
+        $this->views->add('comment/editForm', $formValues, 'main-wide');
     }
 
     /**
@@ -269,9 +267,8 @@ class CommentController implements \Anax\DI\IInjectionAware
 
         $formValues = $this->setFormValues($pageKey, $comment, $output, $id);
 
-        $this->theme->addStylesheet('css/form.css');
         $this->setIndexPageTitle($pageKey);
-        $this->views->add('comment/deleteForm', $formValues);
+        $this->views->add('comment/deleteForm', $formValues, 'main-wide');
     }
 
     /**
