@@ -16,8 +16,9 @@
     "require": {
         "php": ">=5.4",
         "mos/ctextfilter": "1.2.2",
-        "mos/cform": "2.x-dev",
-        "phpmvc/comment": "dev-master"
+        "phpmvc/comment": "dev-master",
+        "mos/cform": "2.*@dev",
+        "mos/cdatabase": "dev-master"
     },
     "autoload": {
         "psr-4": { "Anax\\": "src/" }

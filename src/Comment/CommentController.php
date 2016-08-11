@@ -12,6 +12,23 @@ class CommentController implements \Anax\DI\IInjectionAware
     use \Anax\DI\TInjectable;
 
     /**
+     * Initialize the controller. Sets up the models for the
+     * two tables in db.
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+        $this->di->session();
+
+        $this->comments1 = new \Anax\Comment\Comments1();
+        $this->comments1->setDI($this->di);
+
+        $this->comments2 = new \Anax\Comment\Comments2();
+        $this->comments2->setDI($this->di);
+    }
+
+    /**
      * Sets up view to view all comments.
      *
      * Gets all comments for a specific page and sets up the view to view all
@@ -23,15 +40,31 @@ class CommentController implements \Anax\DI\IInjectionAware
      */
     public function viewAction($key = null)
     {
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
-
-        $all = $comments->findAll($key);
+        $comments = $this->getModelForDb($key);
+        $all = $comments->findAll();
 
         $this->views->add('comment/comments', [
             'comments'  => $all,
             'pageKey'   => $key,
         ], 'main-wide');
+    }
+
+    /**
+     * Gets the path for the model object, which handles
+     * the database table. The name of the table is the
+     * name of the model.
+     *
+     * @param  string $key the model name / db table name
+     *
+     * @return model the model object for a specific table.
+     */
+    private function getModelForDb($key)
+    {
+        if (strcmp($key, "comments1") === 0) {
+            return $this->comments1;
+        } else {
+            return $this->comments2;
+        }
     }
 
     /**
@@ -45,13 +78,17 @@ class CommentController implements \Anax\DI\IInjectionAware
      */
     public function viewAddAction($pageKey)
     {
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
+        $form = new \Anax\HTMLForm\Comments\CFormAddComment($pageKey);
+        $form->setDI($this->di);
+        $status = $form->check();
 
-        $formValues = $this->setFormValues($pageKey);
-
+        $this->di->theme->setTitle("Lägg till en ny kommentar");
         $this->setIndexPageTitle($pageKey);
-        $this->views->add('comment/form', $formValues, 'main-wide');
+        $this->di->views->add('comment/form', [
+            'subtitle' => "Lägg till en ny kommentar",
+            'form' => $form->getHTML(['legend' => 'Lämna en kommentar']),
+
+           ], 'main-wide');
     }
 
     /**
@@ -78,112 +115,6 @@ class CommentController implements \Anax\DI\IInjectionAware
     }
 
     /**
-     * Helper function to set the form values.
-     *
-     * Sets the values in the form fields if they are present.
-     *
-     * @param  string $pageKey  the index in session where comments are stored.
-     * @param  string $comment  the comment string for the comment field.
-     * @param  string $output   the messages, which can be shown in the form.
-     * @param  int $id          the id for the comment. Not valid for adding comments.
-     *
-     * @return []   the array of form fields values.
-     */
-    private function setFormValues($pageKey = null, $comment = null, $output = null, $id = null)
-    {
-        $mail = isset($comment['mail']) ? $comment['mail'] : null;
-        $web = isset($comment['web']) ? $comment['web'] : null;
-        $name = isset($comment['name']) ? $comment['name'] : null;
-        $content = isset($comment['content']) ? $comment['content'] : null;
-
-        $formValues = [
-            'mail'      => $mail,
-            'web'       => $web,
-            'name'      => $name,
-            'content'   => $content,
-            'output'    => $output,
-            'id'        => $id,
-            'pageKey'   => $pageKey
-        ];
-
-        return $formValues;
-    }
-
-    /**
-     * Add a comment.
-     *
-     * Adds the value in the form to the comments, which are stored in the session.
-     * Redirects to the location, which are stated in the hidden input field
-     * in the form.
-     *
-     * @return void
-     */
-    public function addAction()
-    {
-        $isPosted = $this->request->getPost('doCreate');
-
-        if (!$isPosted) {
-            $this->response->redirect($this->request->getPost('redirect'));
-        }
-
-        $comment = $this->getCommentSessionValuesFromForm();
-
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
-        $comments->add($comment);
-
-        $this->response->redirect($this->request->getPost('redirect'));
-    }
-
-    /**
-     * Helper function to get the comment values from the form.
-     *
-     * Gets the value from the form fields sent as a POST.
-     *
-     * @return [] the array with the values from the form fields.
-     */
-    private function getCommentSessionValuesFromForm()
-    {
-        $comment = [
-            'content'   => $this->request->getPost('content'),
-            'name'      => $this->request->getPost('name'),
-            'web'       => $this->request->getPost('web'),
-            'mail'      => $this->request->getPost('mail'),
-            'timestamp' => time(),
-            'ip'        => $this->request->getServer('REMOTE_ADDR'),
-            'id'        => $this->request->getPost('id'),
-            'gravatar'  => 'http://www.gravatar.com/avatar/' . md5(strtolower(trim($this->request->getPost('mail')))) . '.jpg',
-            'pageKey'   => $this->request->getPost('pageKey'),
-        ];
-
-        return $comment;
-    }
-
-    /**
-     * Remove all comments.
-     *
-     * Deletes all comments, which are stored in session. Redirects to the
-     * location, which are stated in the hidden input field in the form.
-     *
-     * @return void
-     */
-    public function removeAllAction()
-    {
-        $isPosted = $this->request->getPost('doRemoveAll');
-
-        if (!$isPosted) {
-            $this->response->redirect($this->request->getPost('redirect'));
-        }
-
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
-
-        $comments->deleteAll($this->request->getPost('pageKey'));
-
-        $this->response->redirect($this->request->getPost('redirect'));
-    }
-
-    /**
      * Sets up the view for the edit form.
      *
      * Sets up the view for the form to make it possible to edit a specified
@@ -197,47 +128,49 @@ class CommentController implements \Anax\DI\IInjectionAware
      */
     public function viewEditAction($pageKey, $id)
     {
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
+        $comments = $this->getModelForDb($pageKey);
+        $comment = $comments->find($id);
 
-        $comment = $comments->findCommentById($pageKey, $id);
+        if ($comment) {
+            $form = new \Anax\HTMLForm\Comments\CFormUpdateComment($comment->getProperties(), $pageKey);
+            $form->setDI($this->di);
+            $status = $form->check();
 
-        $output = null;
-        if (empty($comment)) {
-            $output = "Kunde inte finna kommentar med id $id";
-            $id = null;
+            $this->di->theme->setTitle("Ändra kommentar");
+            $this->setIndexPageTitle($pageKey);
+            $this->di->views->add('comment/form', [
+                'subtitle' => "Ändra kommentar",
+                'form' => $form->getHTML(['legend' => 'Ändra en kommentar']),
+            ], 'main-wide');
+
+        } else {
+            $content = [
+                'subtitle' => 'Hittar ej kommentar',
+                'message' =>  'Hittar ej kommentar med id: ' . $id
+            ];
+
+            $this->showNoSuchCommentMessage($pageKey, $content);
         }
-
-        $formValues = $this->setFormValues($pageKey, $comment, $output, $id);
-
-        $this->setIndexPageTitle($pageKey);
-        $this->views->add('comment/editForm', $formValues, 'main-wide');
     }
 
     /**
-     * Edit a comment.
+     * Helper function for initiate no such comment view.
      *
-     * Edits the comment in the session with the values from the form.
-     * Redirects to the location, which are stated in the hidden input field
-     * in the form.
+     * Initiates a view which shows a message the comment with the specfic
+     * id is not found. Contains a return button.
+     *
+     * @param  [] $content the subtitle and the message shown at page.
      *
      * @return void
      */
-    public function editAction()
+    private function showNoSuchCommentMessage($pageKey, $content)
     {
-        $isPosted = $this->request->getPost('doEdit');
-
-        if (!$isPosted) {
-            $this->response->redirect($this->request->getPost('redirect'));
-        }
-
-        $comment = $this->getCommentSessionValuesFromForm();
-
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
-        $comments->edit($comment);
-
-        $this->response->redirect($this->request->getPost('redirect'));
+        $this->theme->setTitle("View user with id");
+        $this->setIndexPageTitle($pageKey);
+        $this->views->add('error/errorInfo', [
+            'subtitle' => $content['subtitle'],
+            'message' => $content['message'],
+        ], 'main-wide');
     }
 
     /**
@@ -254,49 +187,27 @@ class CommentController implements \Anax\DI\IInjectionAware
      */
     public function viewDeleteAction($pageKey, $id)
     {
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
+        $comments = $this->getModelForDb($pageKey);
+        $comment = $comments->find($id);
 
-        $comment = $comments->findCommentById($pageKey, $id);
+        if ($comment) {
+            $form = new \Anax\HTMLForm\Comments\CFormDeleteComment($comment->getProperties(), $pageKey);
+            $form->setDI($this->di);
+            $status = $form->check();
 
-        $output = null;
-        if (empty($comment)) {
-            $output = "Kunde inte finna kommentar med id $id";
-            $id = null;
+            $this->di->theme->setTitle("Ta bort kommentar");
+            $this->setIndexPageTitle($pageKey);
+            $this->di->views->add('comment/form', [
+                'subtitle' => "Ta bort kommentar",
+                'form' => $form->getHTML(['legend' => 'Ta bort kommentaren']),
+            ], 'main-wide');
+        } else {
+            $content = [
+                'subtitle' => 'Hittar ej kommentar',
+                'message' =>  'Hittar ej kommentar med id: ' . $id
+            ];
+
+            $this->showNoSuchCommentMessage($pageKey, $content);
         }
-
-        $formValues = $this->setFormValues($pageKey, $comment, $output, $id);
-
-        $this->setIndexPageTitle($pageKey);
-        $this->views->add('comment/deleteForm', $formValues, 'main-wide');
-    }
-
-    /**
-     * Deletes a comment.
-     *
-     * Deletes the comment in the session.
-     * Redirects to the location, which are stated in the hidden input field
-     * in the form.
-     *
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $isPosted = $this->request->getPost('doDelete');
-
-        if (!$isPosted) {
-            $this->response->redirect($this->request->getPost('redirect'));
-        }
-
-        $comment = [
-            'id'        => $this->request->getPost('id'),
-            'pageKey'   => $this->request->getPost('pageKey')
-        ];
-
-        $comments = new \Anax\Comment\CommentsInSession();
-        $comments->setDI($this->di);
-        $comments->delete($comment);
-
-        $this->response->redirect($this->request->getPost('redirect'));
     }
 }
