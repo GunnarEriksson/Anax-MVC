@@ -32,5 +32,10 @@ class CDIFactory extends CDIFactoryDefault
             $controller->setDI($this);
             return $controller;
         });
+
+        $this->setShared('logger', function () {
+            $logger = new \Toeswade\Log\Clog();
+            return $logger;
+        });
     }
 }

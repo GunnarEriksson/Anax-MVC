@@ -18,7 +18,9 @@
         "mos/ctextfilter": "1.2.2",
         "phpmvc/comment": "dev-master",
         "mos/cform": "2.*@dev",
-        "mos/cdatabase": "dev-master"
+        "mos/cdatabase": "dev-master",
+        "guer/chtmltable": "dev-master",
+        "toeswade/log": "dev-master"
     },
     "autoload": {
         "psr-4": { "Anax\\": "src/" }

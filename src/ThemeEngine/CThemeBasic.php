@@ -123,6 +123,8 @@ class CThemeBasic implements IThemeEngine, \Anax\DI\IInjectionAware
      */
     public function render()
     {
+        //$this->di->logger->stamp(__CLASS__, __METHOD__, 'render starts');
+
         // Prepare details
         $path       = $this->config['settings']['path'];
         $name       = $this->config['settings']['name'] . '/';
@@ -152,5 +154,7 @@ class CThemeBasic implements IThemeEngine, \Anax\DI\IInjectionAware
         $view->set($tpl, $data);
         $view->setDI($this->di);
         $view->render();
+
+        //$this->di->logger->stamp(__CLASS__, __METHOD__, 'render ends');
     }
 }
