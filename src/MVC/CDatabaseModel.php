@@ -116,9 +116,12 @@ class CDatabaseModel implements \Anax\DI\IInjectionAware
             $keys
         );
 
-        $res = $this->db->execute($values);
-
-        $this->id = $this->db->lastInsertId();
+        try {
+            $res = $this->db->execute($values);
+            $this->id = $this->db->lastInsertId();
+        } catch (Exception $e) {
+            $res = false;
+        }
 
         return $res;
     }

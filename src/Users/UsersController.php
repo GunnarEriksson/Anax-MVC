@@ -30,10 +30,67 @@ class UsersController implements \Anax\DI\IInjectionAware
     public function listAction()
     {
         $all = $this->users->findAll();
+        $table = $this->createTable($all);
 
         $this->theme->setTitle("Användare");
-        $this->views->add('users/index', ['users' => $all, 'title' => "Användare", 'subtitle' => "Visa alla användare"], 'main')
+        $this->views->add('users/index', ['content' => $table, 'title' => "Användare", 'subtitle' => "Visa alla användare"], 'main')
                     ->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
+    }
+
+    private function createTable($data) {
+        $table = new \Guer\HTMLTable\CHTMLTable();
+
+        $tableSpecification = [
+            'id'        => 'users',
+        ];
+
+        $table = $table->create($tableSpecification, $data, [
+            'id' => [
+                'title' => 'Id',
+                'function'	=> function($link) {
+                    return '<a href="users/id/'. $link . '">' . $link . '</a>';
+                }
+            ],
+            'acronym' => [
+                'title'    => 'Akronym',
+            ],
+            'name' => [
+                'title'    => 'Namn',
+            ],
+            'object1' => [
+                'title'    => 'Status',
+                'function'	=> function($user) {
+                    $status = "";
+                    if (isset($user->deleted)) {
+                        $status = '<i class="fa fa-user fa-fw" style="color:black"></i>';
+                    } else {
+                        if (isset($user->active)) {
+                            $status = '<i class="fa fa-user fa-fw" style="color:green"></i>';
+                        } else {
+                            $status = '<i class="fa fa-user fa-fw" style="color:grey"></i>';
+                        }
+                    }
+
+                    return $status;
+                }
+            ],
+            'object2' => [
+                'title'    => 'Redigera',
+                'function'	=> function($user) {
+                    $edit = '<a href="users/update/' . $user->id . '"><i class="fa fa-pencil-square-o" style="color:green" aria-hidden="true"></i></a>';
+                    if (isset($user->deleted)) {
+                        $delete = '<a href="users/delete/' . $user->id . '"><i class="fa fa-trash-o" style="color:red" aria-hidden="true"></i></a>';
+                    } else {
+                        $delete = '<a href="users/softDelete/' . $user->id . '"><i class="fa fa-trash-o" style="color:red" aria-hidden="true"></i></a>';
+                    }
+
+                    return $edit . " " . $delete;
+                }
+            ],
+        ]);
+
+        return $table->getHTMLTable();
+
     }
 
     /**
