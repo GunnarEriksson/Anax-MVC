@@ -37,7 +37,8 @@ class UsersController implements \Anax\DI\IInjectionAware
                     ->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
     }
 
-    private function createTable($data) {
+    private function createTable($data)
+    {
         $table = new \Guer\HTMLTable\CHTMLTable();
 
         $tableSpecification = [
@@ -47,7 +48,7 @@ class UsersController implements \Anax\DI\IInjectionAware
         $table = $table->create($tableSpecification, $data, [
             'id' => [
                 'title' => 'Id',
-                'function'	=> function($link) {
+                'function'    => function ($link) {
                     return '<a href="users/id/'. $link . '">' . $link . '</a>';
                 }
             ],
@@ -59,7 +60,7 @@ class UsersController implements \Anax\DI\IInjectionAware
             ],
             'object1' => [
                 'title'    => 'Status',
-                'function'	=> function($user) {
+                'function'    => function ($user) {
                     $status = "";
                     if (isset($user->deleted)) {
                         $status = '<i class="fa fa-user fa-fw" style="color:black"></i>';
@@ -76,7 +77,7 @@ class UsersController implements \Anax\DI\IInjectionAware
             ],
             'object2' => [
                 'title'    => 'Redigera',
-                'function'	=> function($user) {
+                'function'    => function ($user) {
                     $edit = '<a href="users/update/' . $user->id . '"><i class="fa fa-pencil-square-o" style="color:green" aria-hidden="true"></i></a>';
                     if (isset($user->deleted)) {
                         $delete = '<a href="users/delete/' . $user->id . '"><i class="fa fa-trash-o" style="color:red" aria-hidden="true"></i></a>';
