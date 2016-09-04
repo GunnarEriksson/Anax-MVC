@@ -37,6 +37,16 @@ class UsersController implements \Anax\DI\IInjectionAware
                     ->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
     }
 
+    /**
+     * Helper method to create a table of users.
+     *
+     * Creates a table of all users containing id, name, user active information,
+     * and the possiblity to edit and delete a user.
+     *
+     * @param  [object] $data an array of user objects.
+     *
+     * @return html the user table
+     */
     private function createTable($data)
     {
         $table = new \Guer\HTMLTable\CHTMLTable();
