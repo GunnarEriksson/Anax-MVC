@@ -43,6 +43,7 @@ class CFormAddUser extends \Mos\HTMLForm\CForm
                 'label'       => 'Aktivera',
                 'checked'     => false,
             ],
+
             'submit' => [
                 'type'      => 'submit',
                 'callback'  => [$this, 'callbackSubmit'],

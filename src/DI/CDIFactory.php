@@ -20,6 +20,12 @@ class CDIFactory extends CDIFactoryDefault
             return $controller;
         });
 
+        $this->set('CommentsController', function () {
+            $controller = new \Anax\Comment\CommentsController();
+            $controller->setDI($this);
+            return $controller;
+        });
+
         $this->setShared('db', function () {
             $db = new \Mos\Database\CDatabaseBasic();
             $db->setOptions(require ANAX_APP_PATH . 'config/database_mysql.php');
