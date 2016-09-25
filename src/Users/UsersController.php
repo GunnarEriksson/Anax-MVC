@@ -239,9 +239,6 @@ class UsersController implements \Anax\DI\IInjectionAware
             $form->setDI($this->di);
             $status = $form->check();
 
-            //$info = $this->di->fileContent->get('users-editinfo.md');
-            //$info = $this->di->textFilter->doFilter($info, 'shortcode, markdown');
-
             $this->di->theme->setTitle("Radera användare");
             $this->di->views->add('users/userForm', [
                 'title' => "Användare",
@@ -318,14 +315,11 @@ class UsersController implements \Anax\DI\IInjectionAware
             ->andWhere('deleted is NULL')
             ->execute();
 
-        $this->theme->setTitle("Aktiva användare");
-        $this->views->add('users/index', [
-            'users' => $allActive,
-            'title' => "Användare",
-            'subtitle' => "Visa aktiva användare"
-        ], 'main');
+        $table = $this->createTable($allActive);
 
-        $this->views->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
+        $this->theme->setTitle("Aktiva användare");
+        $this->views->add('users/index', ['content' => $table, 'title' => "Användare", 'subtitle' => "Visa aktiva användare"], 'main')
+                    ->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
     }
 
     /**
@@ -340,14 +334,11 @@ class UsersController implements \Anax\DI\IInjectionAware
             ->andWhere('deleted is NULL')
             ->execute();
 
-        $this->theme->setTitle("Inaktiva användare");
-        $this->views->add('users/index', [
-            'users' => $allInactive,
-            'title' => "Användare",
-            'subtitle' => "Visa inaktiva användare"
-        ], 'main');
+        $table = $this->createTable($allInactive);
 
-        $this->views->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
+        $this->theme->setTitle("Inaktiva användare");
+        $this->views->add('users/index', ['content' => $table, 'title' => "Användare", 'subtitle' => "Visa inaktiva användare"], 'main')
+                    ->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
     }
 
     /**
@@ -361,14 +352,11 @@ class UsersController implements \Anax\DI\IInjectionAware
             ->where('deleted IS NOT NULL')
             ->execute();
 
-        $this->theme->setTitle("Användare i papperskorgen");
-        $this->views->add('users/index', [
-            'users' => $allInactive,
-            'title' => "Användare",
-            'subtitle' => "Visa användare i papperskorgen"
-        ], 'main');
+        $table = $this->createTable($allInactive);
 
-        $this->views->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
+        $this->theme->setTitle("Användare i papperskorgen");
+        $this->views->add('users/index', ['content' => $table, 'title' => "Användare", 'subtitle' => "Visa användare i papperskorgen"], 'main')
+                    ->add('users/userAdmin', ['title' => "Användare", 'subtitle' => 'Administration'], 'sidebar');
     }
 
     /**
