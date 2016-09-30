@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Function to create default content for a model in
+ * Anax-MVC
+ */
+ function getModelContent($argument)
+ {
+     $content = "<?php
+namespace Anax\...
+
+/**
+ * Model for...
+ *
+ */
+class " . $argument . " extends \Anax\MVC\CDatabaseModel
+{
+
+}";
+
+     return $content;
+ }
+
+/**
+ * Create a model with default values
+ */
+$argument = $argv[1];
+$fileName = $argument . ".php";
+
+if (file_exists($fileName)) {
+    die("File already exists, try to use another name!");
+}
+else {
+    $fileContent = getModelContent($argument);
+
+    $modelFile = fopen($fileName, "w") or die("Unable to open file!");
+    file_put_contents($fileName, $fileContent);
+    fclose($modelFile);
+
+    die("Model with the file name " . $fileName . " has been created!\n");
+}
+?>

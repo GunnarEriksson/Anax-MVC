@@ -1,0 +1,64 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Function to create default content for a controller in
+ * Anax-MVC
+ */
+ function getControllerContent($argument)
+ {
+     $content = "<?php
+namespace Anax\...
+
+/**
+ * Controller for...
+ *
+ */
+class " . $argument . "Controller implements \Anax\DI\IInjectionAware
+{
+    use \Anax\DI\TInjectable;
+
+    /**
+     * Initialize the controller.
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+
+    }
+
+    /**
+     * Example of action method.
+     *
+     * @return void
+     */
+    public function exampleAction()
+    {
+
+    }
+
+}";
+
+     return $content;
+ }
+
+/**
+ * Create a controller with default values
+ */
+$argument = $argv[1];
+$fileName = $argument . "Controller.php";
+
+if (file_exists($fileName)) {
+    die("File already exists, try to use another name!");
+}
+else {
+    $fileContent = getControllerContent($argument);
+
+    $controllerFile = fopen($fileName, "w") or die("Unable to open file!");
+    file_put_contents($fileName, $fileContent);
+    fclose($controllerFile);
+
+    die("Controller with the file name " . $fileName . " has been created!\n");
+}
+?>
