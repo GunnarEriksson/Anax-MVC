@@ -59,7 +59,7 @@ class UsersController implements \Anax\DI\IInjectionAware
             'id' => [
                 'title' => 'Id',
                 'function'    => function ($link) {
-                    return '<a href="users/id/'. $link . '">' . $link . '</a>';
+                    return '<a href="'. $this->url->create('users/id/' . $link) . '">' . $link . '</a>';
                 }
             ],
             'acronym' => [
@@ -88,11 +88,11 @@ class UsersController implements \Anax\DI\IInjectionAware
             'object2' => [
                 'title'    => 'Redigera',
                 'function'    => function ($user) {
-                    $edit = '<a href="users/update/' . $user->id . '"><i class="fa fa-pencil-square-o" style="color:green" aria-hidden="true"></i></a>';
+                    $edit = '<a href="' . $this->url->create('users/update/' . $user->id) . '"><i class="fa fa-pencil-square-o" style="color:green" aria-hidden="true"></i></a>';
                     if (isset($user->deleted)) {
-                        $delete = '<a href="users/delete/' . $user->id . '"><i class="fa fa-trash-o" style="color:red" aria-hidden="true"></i></a>';
+                        $delete = '<a href="' . $this->url->create('users/delete/' . $user->id) . '"><i class="fa fa-trash-o" style="color:red" aria-hidden="true"></i></a>';
                     } else {
-                        $delete = '<a href="users/softDelete/' . $user->id . '"><i class="fa fa-trash-o" style="color:red" aria-hidden="true"></i></a>';
+                        $delete = '<a href="' . $this->url->create('users/softDelete/' . $user->id) . '"><i class="fa fa-trash-o" style="color:red" aria-hidden="true"></i></a>';
                     }
 
                     return $edit . " " . $delete;
